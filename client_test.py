@@ -47,7 +47,7 @@ if __name__ == "__main__":
     print("== Set tests ==")
     key3 = "kasa://{}/on".format(DEVICE_ADDR)
     set_test(key3, str(True))
-    time.sleep(3)
+    time.sleep(5) # needs to be long enough for the current sensors to detect
     key4 = "kasa://{}/power".format(DEVICE_ADDR)
     get_test(key4)
     key5 = "kasa://{}/off".format(DEVICE_ADDR)
