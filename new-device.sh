@@ -1,10 +1,15 @@
+# create create a driver, if needed
+# if not needed, comment out.
+DRIVER_ID=$(add -driver.name kasa)
+echo "created driver:$DRIVER_ID"
+
 # create the device
-DEVICE_ID=$(mkd -n red-bulb -t brick:Power_Meter -l lab)
-add -t brick:Luminaire $DEVICE_ID
-add -driver.name kasa $DEVICE_ID
+DEVICE_ID=$(mkd -n green-bulb -t brick:Power_Meter -l home)
+add -t brick:Luminaire $DEVICE_ID # add second type
+add -driver $DRIVER_ID $DEVICE_ID
 echo "created dev:$DEVICE_ID"
 
-DEVICE_IP="192.168.13.110" # must be provided by user
+DEVICE_IP="" # must be provided by user
 
 # add its points 
 PT1=$(mkd -p -n status -t brick:On_Off_Status $DEVICE_ID)

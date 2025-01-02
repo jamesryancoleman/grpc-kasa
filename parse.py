@@ -5,14 +5,17 @@ kasa_re = re.compile(r"^kasa://(?P<host>[a-zA-Z0-9.-]+)(:(?P<port>[0-9]+))?/(?P<
 
 class KasaParams():
     def __init__(self, url) -> None:
-        match = kasa_re.match(url)
+        self.url = url
+        self.value = None # used for set requests
+
+        match = kasa_re.match(self.url)
         if match:
             self.host = match.group('host')
             self.port = match.group('port')
             self.field = match.group('field')
         else:
             print("URL does not match expected format:")
-            print(url)
+            print(self.url)
             self.host = ""
             self.port = ""
             self.field = ""

@@ -4,33 +4,36 @@ from client import *
 import bulb
 
 GRPC_SERVER = "localhost:50064"
-DEVICE_ADDR = "" # this must be filled by the user
+DEVICE_ADDR = "192.168.1.186" # this must be filled by the user
 
 def get_test(key:str, addr=GRPC_SERVER):
-    resp = Get(key, addr)
-    print(key, "->", resp.Value)
+    resp = Get([key], addr)
+    p = resp.Pairs[0]
+    print(key, "->", p.Value)
 
 def set_test(key:str, value:str, addr=GRPC_SERVER):
-    resp = Set(key, value, addr=addr)
+    resp = Set([(key, value)], addr=addr)
+    resp = resp.Pairs[0]
     print(key, "<-", resp.Value)
 
 def get_multiple_test(keys:list[str]):
-    R : device_pb2.GetMultipleResponse
-    R = GetMutiple(keys)
-    for resp in R.Responses:
-        print("{} -> {}".format(resp.Key, resp.Value))
-        if resp.Error > 0 or resp.ErrorMsg:
-            print("\terror_code {}: '{}'".format(resp.Error, resp.ErrorMsg))
+    R : comms_pb2.GetResponse
+    R = Get(keys)
+    for p in R.Pairs:
+        print("{} -> {}".format(p.Key, p.Value))
+        if p.Error > 0 or p.ErrorMsg:
+            print("\terror_code {}: '{}'".format(p.Error, p.ErrorMsg))
 
+# you need multiple smart plugs to test this.
 def set_multiple_test(keys:list[tuple[str, str]]):
-    R : device_pb2.SetMultipleResponse
-    R = SetMultiple(keys)
-    for resp in R.Responses:
-        print("{} <- {}".format(resp.Key, resp.Value))
-        if not resp.Ok:
-            print("\tsuccess={}".format(resp.Ok))
-        if resp.Error > 0 or resp.ErrorMsg:
-            print("\terror {}: {}".format(resp.Error, resp.ErrorMsg))
+    R : comms_pb2.SetResponse
+    R = Set(keys)
+    for p in R.Pairs:
+        print("{} <- {}".format(p.Key, p.Value))
+        if not p.Ok:
+            print("\tsuccess={}".format(p.Ok))
+        if p.Error > 0 or p.ErrorMsg:
+            print("\terror {}: {}".format(p.Error, p.ErrorMsg))
 
 
 if __name__ == "__main__":
