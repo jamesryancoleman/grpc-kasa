@@ -111,6 +111,37 @@ class GetSetRunServicer(device_pb2_grpc.GetSetRunServicer):
             Key=request.Key,
             Ok=ok
         )
+    
+    def GetMultiple(self, request:device_pb2.GetMultipleRequest, context):
+        print("received GetMultiple request: keys={}".format(request.Keys))
+        header = device_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
+
+        keys = request.Keys
+        responses = []
+        for k in keys:
+            # request.Key is of the format "kasa://{HOST}[:PORT]/voltage"
+            params = parse.KasaParams(k)
+            value, ok, err = handler.HandleGet(params.host, params.field)
+            if not ok:
+                print("failed to get {} from {}: error code {} ".format(params.field, 
+                                                                        params.host,
+                                                                        err))
+                responses.append(device_pb2.GetResponse(
+                    Header=header,
+                    Key=k,
+                    # Update to support more errors returned to client
+                    Error=device_pb2.GET_ERROR_KEY_DOES_NOT_EXIST,
+                    ErrorMsg="Unknown key {}".format(request.Key)))
+            else:
+                responses.append(device_pb2.GetResponse(
+                    Header=header,
+                    Key=k,
+                    Value=value))
+
+        return device_pb2.GetMultipleResponse(
+                    Header=header,
+                    Responses=responses,
+            )   
 
 if __name__ == "__main__":
     # start the server
