@@ -135,14 +135,6 @@ class Header(_message.Message):
     Dst: str
     def __init__(self, Src: _Optional[str] = ..., Dst: _Optional[str] = ...) -> None: ...
 
-class Pair(_message.Message):
-    __slots__ = ("Key", "Value")
-    KEY_FIELD_NUMBER: _ClassVar[int]
-    VALUE_FIELD_NUMBER: _ClassVar[int]
-    Key: str
-    Value: str
-    def __init__(self, Key: _Optional[str] = ..., Value: _Optional[str] = ...) -> None: ...
-
 class GetPair(_message.Message):
     __slots__ = ("Key", "Value", "Dtype", "Error", "ErrorMsg")
     KEY_FIELD_NUMBER: _ClassVar[int]
@@ -198,8 +190,8 @@ class SetRequest(_message.Message):
     HEADER_FIELD_NUMBER: _ClassVar[int]
     PAIRS_FIELD_NUMBER: _ClassVar[int]
     Header: Header
-    Pairs: _containers.RepeatedCompositeFieldContainer[Pair]
-    def __init__(self, Header: _Optional[_Union[Header, _Mapping]] = ..., Pairs: _Optional[_Iterable[_Union[Pair, _Mapping]]] = ...) -> None: ...
+    Pairs: _containers.RepeatedCompositeFieldContainer[SetPair]
+    def __init__(self, Header: _Optional[_Union[Header, _Mapping]] = ..., Pairs: _Optional[_Iterable[_Union[SetPair, _Mapping]]] = ...) -> None: ...
 
 class SetResponse(_message.Message):
     __slots__ = ("Header", "Pairs", "Error", "ErrorMsg")

@@ -15,12 +15,6 @@ message Header {
     string Dst = 2;
 }
 
-// Pairs are used when setting values via a serivce
-message Pair {
-    string Key = 1;
-    string Value = 2;
-}
-
 // GetPairs are returned by services when get requests are made
 message GetPair {
     string Key = 1;
@@ -33,11 +27,15 @@ message GetPair {
 
 // SetPairs are returned by services when set requests are made
 message SetPair {
+    // used in requests
     string Key = 1;
     string Value = 2;
+
+    // used in responses
     optional Dtype Dtype = 3;
     
     bool Ok = 4;
+
     optional SetError Error = 5; // is this the right error type?
     optional string ErrorMsg = 6;
 }
@@ -57,7 +55,7 @@ message GetResponse {
 
 message SetRequest {
     optional Header Header = 1;
-    repeated Pair Pairs = 2;
+    repeated SetPair Pairs = 2;
 }
 
 message SetResponse {

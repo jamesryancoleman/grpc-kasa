@@ -42,12 +42,20 @@ class BulbHandler(object):
         if field == "status":
             return False, comms_pb2.SetError.SET_ERROR_READ_ONLY
         elif field == "on":
+            value = ConvertToBool(value)
             print("value for on() was: ", value)
-            asyncio.run(bulb.On())
+            if value:
+                asyncio.run(bulb.On())
+            else:
+                asyncio.run(bulb.Off())
             return True, None
         elif field == "off":
+            value = ConvertToBool(value)
             print("value for off() was: ", value)
-            asyncio.run(bulb.Off())
+            if value:
+                asyncio.run(bulb.Off())
+            else:
+                asyncio.run(bulb.On())
             return True, None
         elif field == "voltage":
             return False, comms_pb2.SetError.SET_ERROR_READ_ONLY
@@ -57,6 +65,11 @@ class BulbHandler(object):
             return False, comms_pb2.SetError.SET_ERROR_READ_ONLY
         else:
             return False, comms_pb2.SetError.SET_ERROR_KEY_DOES_NOT_EXIST
+        
+def ConvertToBool(v:str) -> bool:
+    if v.lower() == "true":
+        return True
+    return False
 
 # instantiate singleton
 handler = BulbHandler()
