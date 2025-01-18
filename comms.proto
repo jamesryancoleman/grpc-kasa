@@ -13,6 +13,8 @@ message Empty{}
 message Header {
     string Src = 1;
     string Dst = 2;
+
+    uint64 TxId = 3;
 }
 
 // GetPairs are returned by services when get requests are made
@@ -113,13 +115,15 @@ enum SetError {
 message PointQueryRequest {
     optional Header Header = 1;
 
-    optional string Device = 2; // "5", "dev:5", "bos://localhost/bos/dev/5"
+    optional string Query = 2;
+
+    optional string Device = 3; // "5", "dev:5", "bos://localhost/bos/dev/5"
     repeated string Names = 4;
     repeated string Types = 5;
     repeated string Locations = 6;
     optional bool ConsiderDeviceLoc = 7; 
+    optional Dtype Resource = 8; // 30, 40 or 48
 
-    optional Dtype Dtype = 10;
     optional QueryError Error = 11;
     optional string ErrorMsg = 12;
 }
@@ -127,7 +131,7 @@ message PointQueryRequest {
 message QueryResponse {
     optional Header Header = 1;
     optional string Query = 2; // should this be optional?
-    repeated string Value = 3;
+    repeated string Values = 3;
     optional Dtype Dtype = 4;
     optional QueryError Error = 5;
     optional string ErrorMsg = 6;
@@ -185,13 +189,13 @@ enum Dtype {
 
 
     // sysmod response types
-    POINT_ID = 30; // e.g., "bos://localhost/bos/dev/5/pts/1"
-    POINT_ID_LIST = 31; // e.g., "bos://localhost/bos/dev/5/pts/1 bos://localhost/bos/dev/6/pts/1"
+    POINT = 30; // e.g., "bos://localhost/bos/dev/5/pts/1"
+    POINT_LIST = 31; // e.g., "bos://localhost/bos/dev/5/pts/1 bos://localhost/bos/dev/6/pts/1"
 
-    DEVICE_ID = 40;
-    DEVICE_ID_LIST = 41;
+    DEVICE = 40;
+    DEVICE_LIST = 41;
 
-    DRIVER_ID = 48;
+    DRIVER = 48;
     DRIVER_XREF = 49;
 }
 
