@@ -18,7 +18,7 @@ class BulbHandler(object):
     def HandleGet(self, host:str, field:str) -> comms_pb2.GetPair:
         bulb.addr = host # override last address
         
-        value:str
+        value = None
         dtype:str
         if field == "status":
             value = asyncio.run(bulb.State())
@@ -41,6 +41,7 @@ class BulbHandler(object):
             dtype = comms_pb2.FLOAT
         else:
             return comms_pb2.GetPair(Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST)
+        print("value:", value, type(value))
         return comms_pb2.GetPair(Value=str(value), Dtype=dtype)
     
     def HandleSet(self, host:str, field:str, value=None) -> tuple[bool, comms_pb2.SetError]:
@@ -92,7 +93,7 @@ class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):
         for k in keys:
             params = parse.KasaParams(k)
             pair = handler.HandleGet(params.host, params.field)
-            if pair.Error is not None:
+            if pair.Error > 0:
                 print("failed to get {} from {}: error code {} ".format(params.field, 
                                                                         params.host,
                                                                         pair.Error))
@@ -100,14 +101,15 @@ class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):
                     Key=k,
                     # Update to support more errors returned to client
                     Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST,
-                    ErrorMsg="Unknown key {}".format(request.Key)))
+                    ErrorMsg="Unknown key {}".format(k)))
             else:
+                pair.Key = k
                 response_pairs.append(pair)
 
-        return comms_pb2.GetResponse(
+        resp = comms_pb2.GetResponse(
                     Header=header,
-                    Pairs=response_pairs,
-            ) 
+                    Pairs=response_pairs)
+        return resp
       
     def Set(self, request:comms_pb2.SetRequest, context):
         print("received Set request: pairs={}".format(request.Pairs))
