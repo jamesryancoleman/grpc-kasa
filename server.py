@@ -41,7 +41,7 @@ class BulbHandler(object):
             dtype = comms_pb2.FLOAT
         else:
             return comms_pb2.GetPair(Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST)
-        print("value:", value, type(value))
+        # print("value:", value, type(value))
         return comms_pb2.GetPair(Value=str(value), Dtype=dtype)
     
     def HandleSet(self, host:str, field:str, value=None) -> tuple[bool, comms_pb2.SetError]:
@@ -51,7 +51,7 @@ class BulbHandler(object):
             return False, comms_pb2.SetError.SET_ERROR_READ_ONLY
         elif field == "on":
             value = ConvertToBool(value)
-            print("value for on() was: ", value)
+            # print("value for on() was: ", value)
             if value:
                 asyncio.run(bulb.On())
             else:
@@ -59,7 +59,7 @@ class BulbHandler(object):
             return True, None
         elif field == "off":
             value = ConvertToBool(value)
-            print("value for off() was: ", value)
+            # print("value for off() was: ", value)
             if value:
                 asyncio.run(bulb.Off())
             else:
@@ -85,7 +85,7 @@ handler = BulbHandler()
 # start the gRPC server
 class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):  
     def Get(self, request:comms_pb2.GetRequest, context):
-        print("received Get request: keys={}".format(request.Keys))
+        print("received Get request:")
         header = comms_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
 
         keys = request.Keys
@@ -112,7 +112,7 @@ class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):
         return resp
       
     def Set(self, request:comms_pb2.SetRequest, context):
-        print("received Set request: pairs={}".format(request.Pairs))
+        print("received Set request:")
         header = comms_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
         set_responses:list[comms_pb2.SetPair] = []
         request_params = [parse.KasaParams(pair.Key) for pair in request.Pairs]
