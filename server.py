@@ -15,26 +15,33 @@ SERVER_PORT = "50064"
 
 # Singleton class used to handle Get and Set method calls
 class BulbHandler(object):    
-    def HandleGet(self, host:str, field:str) -> tuple[str, bool, comms_pb2.GetError]:
+    def HandleGet(self, host:str, field:str) -> comms_pb2.GetPair:
         bulb.addr = host # override last address
         
         value:str
+        dtype:str
         if field == "status":
             value = asyncio.run(bulb.State())
+            dtype = comms_pb2.BOOL
         elif field == "on":
             value = asyncio.run(bulb.State())
+            dtype = comms_pb2.BOOL
         elif field == "off":
             value = asyncio.run(bulb.State())
             value = not value
+            dtype = comms_pb2.BOOL
         elif field == "voltage":
             value = asyncio.run(bulb.Voltage())
+            dtype = comms_pb2.FLOAT
         elif field == "current":
             value = asyncio.run(bulb.Current())
+            dtype = comms_pb2.FLOAT
         elif field == "power":
             value = asyncio.run(bulb.Power())
+            dtype = comms_pb2.FLOAT
         else:
-            return value, False, comms_pb2.GetError.GET_ERROR_KEY_DOES_NOT_EXIST
-        return str(value), True, None
+            return comms_pb2.GetPair(Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST)
+        return comms_pb2.GetPair(Value=value, dtype=dtype)
     
     def HandleSet(self, host:str, field:str, value=None) -> tuple[bool, comms_pb2.SetError]:
         bulb.addr = host # override last address
@@ -77,27 +84,25 @@ handler = BulbHandler()
 # start the gRPC server
 class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):  
     def Get(self, request:comms_pb2.GetRequest, context):
-        print("received GetMultiple request: keys={}".format(request.Keys))
+        print("received Get request: keys={}".format(request.Keys))
         header = comms_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
 
         keys = request.Keys
         response_pairs = []
         for k in keys:
             params = parse.KasaParams(k)
-            value, ok, err = handler.HandleGet(params.host, params.field)
-            if not ok:
+            pair = handler.HandleGet(params.host, params.field)
+            if pair.Error is not None:
                 print("failed to get {} from {}: error code {} ".format(params.field, 
                                                                         params.host,
-                                                                        err))
+                                                                        pair.Error))
                 response_pairs.append(comms_pb2.GetPair(
                     Key=k,
                     # Update to support more errors returned to client
                     Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST,
                     ErrorMsg="Unknown key {}".format(request.Key)))
             else:
-                response_pairs.append(comms_pb2.GetPair(
-                    Key=k,
-                    Value=value))
+                response_pairs.append(pair)
 
         return comms_pb2.GetResponse(
                     Header=header,
