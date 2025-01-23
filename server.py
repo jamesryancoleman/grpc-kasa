@@ -41,7 +41,7 @@ class BulbHandler(object):
             dtype = comms_pb2.FLOAT
         else:
             return comms_pb2.GetPair(Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST)
-        return comms_pb2.GetPair(Value=value, dtype=dtype)
+        return comms_pb2.GetPair(Value=str(value), dtype=dtype)
     
     def HandleSet(self, host:str, field:str, value=None) -> tuple[bool, comms_pb2.SetError]:
         bulb.addr = host # override last address
