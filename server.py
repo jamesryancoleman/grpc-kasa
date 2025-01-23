@@ -85,7 +85,7 @@ handler = BulbHandler()
 # start the gRPC server
 class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):  
     def Get(self, request:comms_pb2.GetRequest, context):
-        print("received Get request:")
+        print("received Get request: {}".format(request.Keys))
         header = comms_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
 
         keys = request.Keys
@@ -113,6 +113,8 @@ class GetSetRunServicer(comms_pb2_grpc.GetSetRunServicer):
       
     def Set(self, request:comms_pb2.SetRequest, context):
         print("received Set request:")
+        for p in request.Pairs:
+            print("\t{}: {}".format(p.Key, p.Value))
         header = comms_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
         set_responses:list[comms_pb2.SetPair] = []
         request_params = [parse.KasaParams(pair.Key) for pair in request.Pairs]
