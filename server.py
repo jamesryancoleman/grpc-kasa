@@ -148,29 +148,3 @@ if __name__ == "__main__":
 
     logging.basicConfig()
     serve()
-
-
-        # def Get(self, request:comms_pb2.GetRequest, context):
-    #     print("received Get request: key='{}'".format(request.Key))
-    #     header = comms_pb2.Header(Src=request.Header.Dst, Dst=request.Header.Src)
-
-    #     # request.Key is of the format "kasa://{HOST}[:PORT]/voltage"
-    #     params = parse.KasaParams(request.Key)
-    #     value, ok, err = handler.HandleGet(params.host, params.field)
-    #     if not ok:
-    #         print("failed to get {} from {}: error code {} ".format(params.field, 
-    #                                                                 params.host,
-    #                                                                 err))
-    #         return comms_pb2.GetResponse(
-    #             Header=header,
-    #             Key=request.Key,
-    #             # Update to support more errors returned to client
-    #             Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST,
-    #             ErrorMsg="Unknown key {}".format(request.Key),
-    #         )        
-
-    #     return comms_pb2.GetResponse(
-    #                 Header=header,
-    #                 Key=request.Key,
-    #                 Value=value,
-    #         )
