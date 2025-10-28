@@ -23,13 +23,16 @@ class BulbHandler(object):
         if field == "status":
             value = asyncio.run(bulb.State())
             dtype = comms_pb2.BOOL
+            print('status', value, dtype)
         elif field == "on":
             value = asyncio.run(bulb.State())
             dtype = comms_pb2.BOOL
+            print('on', value, dtype)
         elif field == "off":
             value = asyncio.run(bulb.State())
             value = not value
             dtype = comms_pb2.BOOL
+            print('off', value, dtype)
         elif field == "voltage":
             value = asyncio.run(bulb.Voltage())
             dtype = comms_pb2.FLOAT
@@ -41,7 +44,7 @@ class BulbHandler(object):
             dtype = comms_pb2.FLOAT
         else:
             return comms_pb2.GetPair(Error=comms_pb2.GET_ERROR_KEY_DOES_NOT_EXIST)
-        # print("value:", value, type(value))
+        print("value:", value, type(value))
         return comms_pb2.GetPair(Value=str(value), Dtype=dtype)
     
     def HandleSet(self, host:str, field:str, value=None) -> tuple[bool, comms_pb2.SetError]:
