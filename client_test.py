@@ -17,7 +17,7 @@ def set_test(key:str, value:str, addr=GRPC_SERVER):
     print(key, "<-", resp.Value)
 
 def get_multiple_test(keys:list[str]):
-    R : comms_pb2.GetResponse
+    R : common_pb2.GetResponse
     R = Get(keys)
     for p in R.Pairs:
         print("{} -> {}".format(p.Key, p.Value))
@@ -26,7 +26,7 @@ def get_multiple_test(keys:list[str]):
 
 # you need multiple smart plugs to test this.
 def set_multiple_test(keys:list[tuple[str, str]]):
-    R : comms_pb2.SetResponse
+    R : common_pb2.SetResponse
     R = Set(keys)
     for p in R.Pairs:
         print("{} <- {}".format(p.Key, p.Value))

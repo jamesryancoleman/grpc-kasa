@@ -1,8 +1,6 @@
-FROM python:3.13.1-slim-bookworm
+FROM jamescoleman/bospy
 
 RUN python -m pip install python-kasa
-RUN python -m pip install grpcio-tools
-RUN python -m pip install grpcio
 
 RUN mkdir -p /opt/bos/device/drivers/kasa
 WORKDIR /opt/bos/device/drivers/kasa
